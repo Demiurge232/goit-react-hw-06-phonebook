@@ -1,25 +1,27 @@
-import PropTypes from 'prop-types';
 import ContactItem from 'components/ContactItem/ContactItem';
 import { ContactListUl } from './ContactList.styled';
-export const ContactList = ({ contacts, deleteContact }) => {
+import { useSelector } from 'react-redux';
+import { getContacts, getFilter } from 'redux/selectors';
+
+export const ContactList = () => {
+  const contacts = useSelector(getContacts);
+  const filter = useSelector(getFilter);
+
+  const getFindContact = () => {
+    const normalizedFilter = filter.toLowerCase();
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(normalizedFilter)
+    );
+  };
+  const renderFindContact = getFindContact();
+
   return (
     <ContactListUl>
-      {contacts.map(({ name, id, number }) => (
-        <ContactItem
-          name={name}
-          key={id}
-          id={id}
-          number={number}
-          deleteContact={deleteContact}
-        />
+      {renderFindContact.map(({ name, id, number }) => (
+        <ContactItem name={name} key={id} id={id} number={number} />
       ))}
     </ContactListUl>
   );
 };
 
 export default ContactList;
-
-ContactList.propTypes = {
-  contacts: PropTypes.arrayOf(PropTypes.objectOf(PropTypes.string)),
-  deleteContact: PropTypes.func,
-};
